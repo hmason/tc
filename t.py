@@ -31,7 +31,11 @@ class Twitter(object):
         for t in tweets:
             if t['_display']:
                 spacer = ' '.join(['' for i in range((d.MAX_TWITTER_USERNAME_LENGTH + 2) - len(t['user']))])
-                print d.OKGREEN + t['user'] + d.ENDC + spacer + t['text']
+                tweet_text = d.OKGREEN + t['user'] + d.ENDC + spacer + t['text']
+                if t['_display_topics']: # print with topics
+                    print tweet_text + '  ' + d.OKBLUE + ' '.join(t['_display_topics']) + d.ENDC
+                else: # print without topics
+                    print tweet_text
         
     def load_tweets(self, num, sort='time',mark_read=True):
         tweets = []
@@ -55,6 +59,16 @@ class Twitter(object):
             for blackword in self.settings['blacklist']:
                 if blackword.search(t['text'].lower()):
                     t['_display'] = False
+            
+            t['_display_topics'] = []
+            try:
+                for topic, score in t['topics'].items():
+                    # print "topic: %s, score: %s" % (topic, score)
+                    # print "threshold: %s" % self.settings['topic_thresholds'][topic]
+                    if score >= self.settings['topic_thresholds'][topic]:
+                        t['_display_topics'].append(topic) 
+            except KeyError: # no topic analysis for this tweet
+                pass
                     
             if t['user'] in self.settings['whitelist_users']:
                 t['_display'] = True
@@ -63,6 +77,8 @@ class Twitter(object):
         
     def load_settings(self):
         settings = {}
+        
+        settings['topic_thresholds'] = {'default': .6, 'betaworks': 1.0, 'narcissism': .25 }
         
         f = open('whitelist_users', 'r')
         settings['whitelist_users'] = [user.strip() for user in f.readlines()]

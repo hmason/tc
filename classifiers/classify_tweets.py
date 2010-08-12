@@ -10,7 +10,7 @@ class tweetClassifier(object):
 class narcissism(tweetClassifier):
     N_THRESHOLD = 4.0
     def __init__(self):
-        self.keywords = ['out my', 'my new', 'i am', 'i hate', 'i love', 'i like', "i can't", 'new post', 'did i', 'i shall', 'i really', 'i wish', 'mine']
+        self.keywords = ['my latest', 'out my', 'my new', 'i am', 'i hate', 'i love', 'i like', "i can't", 'new post', 'did i', 'i shall', 'i really', 'i wish', 'mine', "i'll", 'i do', "i don't", "i won't", "for my", "i did", "i have", "i had"]
         
     def classify(self, tweet):
         count = 0
@@ -23,7 +23,7 @@ class narcissism(tweetClassifier):
         
 class betaworks(tweetClassifier):
     def __init__(self):
-        self.keywords = ['tweetdeck', 'chartbeat', 'socialflow', '@bitly']
+        self.keywords = ['tweetdeck', 'chartbeat', 'socialflow', '@bitly', 'venmo', 'tumblr', 'superfeedr', 'backupify', 'fluiddb', 'twitterfeed']
         
     def classify(self, tweet):
         score = 0.0
