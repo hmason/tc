@@ -72,13 +72,35 @@ class Twitter(object):
                     
             if t['user'] in self.settings['whitelist_users']:
                 t['_display'] = True
+                
+        # cache any links in these tweets so I can get to them easily
+        self.extract_links(tweets)
                     
         return tweets
+        
+    def extract_links(self, tweets):
+        """
+        extract_links: pull links out of tweets and cache in a text file
+        """
+        re_http = re.compile("(http|https):\/\/(([a-z0-9\-]+\.)*([a-z]{2,5}))\/\w+")
+        links = []
+        for t in tweets:
+            r = re_http.search(t['text'])
+            if r:
+                links.append(r.group(0))
+        
+        if links:
+            f = open(self.settings['link_cache_filename'], 'w')
+            for link in links:
+                f.write('%s\n' % link)
+            f.close()
+        
         
     def load_settings(self):
         settings = {}
         
         settings['topic_thresholds'] = {'default': .6, 'betaworks': 1.0, 'narcissism': .25 }
+        settings['link_cache_filename'] = 'link_cache'
         
         f = open('whitelist_users', 'r')
         settings['whitelist_users'] = [user.strip() for user in f.readlines()]
