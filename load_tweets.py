@@ -11,6 +11,7 @@ import sys, os
 import pymongo
 import tweepy # Twitter API class: http://github.com/joshthecoder/tweepy
 from lib import mongodb
+from classifiers.classify_tweets import *
 
 class loadTweets(object):
     TWITTER_USERNAME = 'hmason' # configure me
@@ -24,7 +25,7 @@ class loadTweets(object):
 
         last_tweet_id = self.get_last_tweet_id()
         self.fetchTweets(last_tweet_id)
-
+        self.classify_tweets()
         
 
     def get_last_tweet_id(self):
@@ -66,11 +67,28 @@ class loadTweets(object):
             }
             ts.append(t)
         
-        # insert into db    
-        self.db[self.DB_NAME].insert(ts)
+        # insert into db
+        try:
+            self.db[self.DB_NAME].insert(ts)
+        except pymongo.errors.InvalidOperation: # no tweets?
+            pass
         
         if self.debug:
             print "added %s tweets to the db" % (len(ts))
+
+    def classify_tweets(self):
+        classifiers = []
+        for active_classifier in active_classifiers:
+            c = globals()[active_classifier]()
+            classifiers.append(c)
+
+        for r in self.db[self.DB_NAME].find(spec={'topics': {'$exists': False } },fields={'text': True, 'user': True}): # for all unclassified tweets
+            topics = {}
+            for c in classifiers:
+                (topic, score) = c.classify(r['text'])
+                topics[topic] = score
+
+            self.db[self.DB_NAME].update({'_id': r['_id']}, {'$set': {'topics': topics }})
 
     
     # util classes    

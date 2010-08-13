@@ -22,7 +22,7 @@ class Twitter(object):
         self.settings = self.load_settings()
         self.db = mongodb.connect('tweets')
                 
-        tweets = self.load_tweets(int(options.num), mark_read=options.mark_read)
+        tweets = self.load_tweets(int(options.num), sort=options.sort, mark_read=options.mark_read)
         self.display_tweets(tweets)
         
     def display_tweets(self, tweets):
@@ -40,7 +40,11 @@ class Twitter(object):
     def load_tweets(self, num, sort='time',mark_read=True):
         tweets = []
         
-        if sort == 'time':
+        if sort == 'antitime': # sort by time, oldest first
+            for t in self.db['tweets'].find(spec={'r': {'$exists': False } }).sort('created_at',direction=pymongo.ASCENDING).limit(num):
+                t['_display'] = True # mark all for display, so optimistic
+                tweets.append(t)        
+        else: # sort by time, newest first
             for t in self.db['tweets'].find(spec={'r': {'$exists': False } }).sort('created_at',direction=pymongo.DESCENDING).limit(num):
                 t['_display'] = True # mark all for display, so optimistic
                 tweets.append(t)
@@ -82,7 +86,7 @@ class Twitter(object):
         """
         extract_links: pull links out of tweets and cache in a text file
         """
-        re_http = re.compile("(http|https):\/\/(([a-z0-9\-]+\.)*([a-z]{2,5}))\/\w+")
+        re_http = re.compile("(http|https):\/\/(([a-z0-9\-]+\.)*([a-z]{2,5}))\/[\w|\/]+")
         links = []
         for t in tweets:
             r = re_http.search(t['text'])
@@ -99,7 +103,7 @@ class Twitter(object):
     def load_settings(self):
         settings = {}
         
-        settings['topic_thresholds'] = {'default': .6, 'betaworks': 1.0, 'narcissism': .25 }
+        settings['topic_thresholds'] = {'default': .6, 'betaworks': 1.0, 'narcissism': .25, 'sports': .9999 }
         settings['link_cache_filename'] = 'link_cache'
         
         f = open('whitelist_users', 'r')
@@ -120,7 +124,7 @@ if __name__ == "__main__":
     parser = OptionParser("usage: %prog [options]") # no args this time
     parser.add_option("-d", "--debug", dest="debug", action="store_true", default=False, help="set debug mode = True")
     parser.add_option("-m", "--mark_read", dest="mark_read", action="store_false", default=True, help="Don't mark displayed tweets as read")
-    parser.add_option("-s", "--sort", dest="sort", action="store", default='time', help="Sort by time, rel")
+    parser.add_option("-s", "--sort", dest="sort", action="store", default='time', help="Sort by time, antitime, rel")
     parser.add_option("-n", "--num", dest="num", action="store", default=10, help="number of tweets to retrieve")
     parser.add_option("-t", "--topic", dest="topic", action="store", default=None, help="show one topic only")
     (options, args) = parser.parse_args()
