@@ -14,8 +14,8 @@ from lib import mongodb
 from classifiers.classify_tweets import *
 
 class loadTweets(object):
-    TWITTER_USERNAME = 'hmason' # configure me
-    TWITTER_PASSWORD = 'twitter7com!' # configure me
+    TWITTER_USERNAME = 'username' # configure me
+    TWITTER_PASSWORD = 'password' # configure me
     DB_NAME = 'tweets'
     
     def __init__(self, debug=False):
