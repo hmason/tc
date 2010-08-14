@@ -12,16 +12,15 @@ import pymongo
 import tweepy # Twitter API class: http://github.com/joshthecoder/tweepy
 from lib import mongodb
 from classifiers.classify_tweets import *
+import settings # local app settings
 
 class loadTweets(object):
-    TWITTER_USERNAME = 'username' # configure me
-    TWITTER_PASSWORD = 'password' # configure me
     DB_NAME = 'tweets'
     
     def __init__(self, debug=False):
         self.debug = debug
         self.db = mongodb.connect(self.DB_NAME)
-        self.api = self.init_twitter(self.TWITTER_USERNAME, self.TWITTER_PASSWORD)
+        self.api = self.init_twitter(settings.TWITTER_USERNAME, settings.TWITTER_PASSWORD)
 
         last_tweet_id = self.get_last_tweet_id()
         self.fetchTweets(last_tweet_id)
