@@ -116,8 +116,11 @@ class loadTweets(object):
             records = [r for r in self.db[self.USER_COLL_NAME].find(spec={'_id': user['_id']})]
             if not records or abs(records[0]['_updated'] - datetime.datetime.now()) >= datetime.timedelta(1): # update once per day
                 kwargs = { 'users': user['_id'] }
-                response = k.call('klout', **kwargs)
-                user['klout_score'] = response['users'][0]['kscore']
+                try:
+                    response = k.call('klout', **kwargs)
+                    user['klout_score'] = response['users'][0]['kscore']
+                except klout.KloutError: # probably a 404
+                    pass
                 self.db[self.USER_COLL_NAME].remove({'_id': user['_id']})
                 self.db[self.USER_COLL_NAME].insert(user)
                 update_count += 1
