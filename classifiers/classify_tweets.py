@@ -4,7 +4,7 @@ import nltk, re
 from nltk.tokenize import *
 import pickle
 
-active_classifiers = ['betaworks', 'narcissism', 'sports']
+active_classifiers = ['betaworks', 'narcissism', 'sports', 'checkin']
 
 class tweetClassifier(object):
     def __init__(self):
@@ -110,6 +110,19 @@ class betaworks(tweetClassifier):
                 score = 1.0
                 
         return ('betaworks', score)
+
+class checkin(tweetClassifier):
+    def __init__(self):
+        self.keywords = ['4sq.com']
+
+    def classify(self, tweet):
+        score = 0.0
+        for word in self.keywords:
+            if word in tweet.lower():
+                score = 1.0
+
+        return ('checkin', score)
+
         
 if __name__ == '__main__':
     # n = narcissism()

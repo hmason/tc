@@ -14,6 +14,7 @@ from optparse import OptionParser
 import pymongo
 import tweepy
 
+import settings
 from lib import mongodb
 from lib import display    
 
@@ -31,6 +32,8 @@ class Twitter(object):
         for t in tweets:
             if t['_display']:
                 spacer = ' '.join(['' for i in range((d.MAX_TWITTER_USERNAME_LENGTH + 2) - len(t['user']))])
+                if settings.TWITTER_USERNAME in t['text']: # highlight replies   
+                    t['text'] = d.BOLD_ON + t['text'] + d.BOLD_OFF
                 tweet_text = d.OKGREEN + t['user'] + d.ENDC + spacer + t['text']
                 if t['_display_topics']: # print with topics
                     print tweet_text + '  ' + d.OKBLUE + ' '.join(t['_display_topics']) + d.ENDC
