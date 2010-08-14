@@ -46,10 +46,15 @@ class Twitter(object):
         if sort == 'antitime': # sort by time, oldest first
             for t in self.db['tweets'].find(spec={'r': {'$exists': False } }).sort('created_at',direction=pymongo.ASCENDING).limit(num):
                 t['_display'] = True # mark all for display, so optimistic
-                tweets.append(t)        
+                tweets.append(t)
+        elif sort == 'rel':
+            for t in self.db['tweets'].find(spec={'r': {'$exists': False } }).sort('created_at',direction=pymongo.ASCENDING): # get all unread tweets
+                t['_display'] = True
+                tweets.append(t)
+            tweets = self.sort_by_relevance(tweets, num=num)
         else: # sort by time, newest first
             for t in self.db['tweets'].find(spec={'r': {'$exists': False } }).sort('created_at',direction=pymongo.DESCENDING).limit(num):
-                t['_display'] = True # mark all for display, so optimistic
+                t['_display'] = True
                 tweets.append(t)
     
         # mark these tweets as 'read' in the db
@@ -84,6 +89,42 @@ class Twitter(object):
         self.extract_links(tweets)
                     
         return tweets
+        
+    def sort_by_relevance(self, tweets, num):
+        """
+        sort_by_relevance: sorts tweets by arbitrary relevance to me. Criteria:
+        1) does it mention me?
+        2) is it by someone on my whitelist?
+        3) is it about a topic that I care about?
+        4) sort remainder by 'interestingness'
+        """
+        mentions = []
+        whitelist = []
+        topical = []
+        other = []
+        
+        for t in tweets:
+            t['_display_topics'] = []
+            try:
+                for topic, score in t['topics'].items():
+                    if score >= self.settings['topic_thresholds'][topic]:
+                        t['_display_topics'].append(topic) 
+            except KeyError:
+                pass
+
+            if settings.TWITTER_USERNAME in t['text']:
+                mentions.append(t)
+            elif t['user'] in self.settings['whitelist_users']:
+                whitelist.append(t)
+            elif t['_display_topics']:
+                topical.append(t)
+            else:
+                other.append(t)
+
+        tweets = mentions + whitelist + topical + other
+        
+        return tweets[:num]
+        
         
     def extract_links(self, tweets):
         """

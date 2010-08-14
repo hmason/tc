@@ -85,10 +85,10 @@ class sports(tweetClassifier):
 
         
 class narcissism(tweetClassifier):
-    N_THRESHOLD = 4.0
+    N_THRESHOLD = 5.0
     
     def __init__(self):
-        self.keywords = ['my latest', 'out my', 'my new', 'i am', 'i hate', 'i love', 'i like', "i can't", 'new post', 'did i', 'i shall', 'i really', 'i wish', 'mine', "i'll", 'i do', "i don't", "i won't", "for my", "i did", "i have", "i had"]
+        self.keywords = ['my latest', 'out my', 'my new', 'i am', 'i hate', 'i love', 'i like', "i can't", 'new post', 'did i', 'i shall', 'i really', 'i wish', 'mine', "i'll", 'i do', "i don't", "i won't", "for my", "i did", "i have", "i had", 'fml']
         
     def classify(self, tweet):
         count = 0
