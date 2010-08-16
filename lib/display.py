@@ -27,7 +27,7 @@ class Display(object):
                 tweet_text = self.OKGREEN + t['user'] + self.ENDC + spacer + t['text']
                 if t.get('_display_topics', None): # print with topics
                     print tweet_text + '  ' + self.OKBLUE + ' '.join(t['_display_topics']) + self.ENDC
-                if t.get('_datetime', None): # print with date/time
+                elif t.get('_datetime', None): # print with date/time
                     print tweet_text + '  ' + self.OKBLUE + t['_datetime'] + self.ENDC
                 else: # print without topics
                     print tweet_text
