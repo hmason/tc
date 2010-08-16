@@ -24,21 +24,9 @@ class Twitter(object):
         self.db = mongodb.connect('tweets')
                 
         tweets = self.load_tweets(int(options.num), sort=options.sort, mark_read=options.mark_read)
-        self.display_tweets(tweets)
-        
-    def display_tweets(self, tweets):
         d = display.Display()
+        d.display_tweets(tweets)
         
-        for t in tweets:
-            if t['_display']:
-                spacer = ' '.join(['' for i in range((d.MAX_TWITTER_USERNAME_LENGTH + 2) - len(t['user']))])
-                if settings.TWITTER_USERNAME in t['text']: # highlight replies   
-                    t['text'] = d.BOLD_ON + t['text'] + d.BOLD_OFF
-                tweet_text = d.OKGREEN + t['user'] + d.ENDC + spacer + t['text']
-                if t['_display_topics']: # print with topics
-                    print tweet_text + '  ' + d.OKBLUE + ' '.join(t['_display_topics']) + d.ENDC
-                else: # print without topics
-                    print tweet_text
         
     def load_tweets(self, num, sort='time',mark_read=True):
         tweets = []
