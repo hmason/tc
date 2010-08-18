@@ -40,6 +40,11 @@ class Twitter(object):
                 t['_display'] = True
                 tweets.append(t)
             tweets = self.sort_by_relevance(tweets, num=num)
+        elif sort == 'inf':
+            for t in self.db['tweets'].find(spec={'r': {'$exists': False } }).sort('created_at',direction=pymongo.ASCENDING): # get all unread tweets
+                t['_display'] = True
+                tweets.append(t)
+            tweets = self.sort_by_influence(tweets, num=num)
         else: # sort by time, newest first
             for t in self.db['tweets'].find(spec={'r': {'$exists': False } }).sort('created_at',direction=pymongo.DESCENDING).limit(num):
                 t['_display'] = True
@@ -77,6 +82,19 @@ class Twitter(object):
         self.extract_links(tweets)
                     
         return tweets
+    
+    def sort_by_influence(self, tweets, num):
+        """
+        sort_by_influence: sort tweets by klout score
+        """
+        for t in tweets:
+            for k in self.db['users'].find(spec={'_id':t['author']}, fields={'klout_score': True}):
+                try:
+                    t['influence'] = k['klout_score']
+                except KeyError: # no klout score
+                    t['influence'] = 0
+
+        return sorted(tweets, key=lambda x:-x['influence'])[:num]
         
     def sort_by_relevance(self, tweets, num):
         """
