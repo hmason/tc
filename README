@@ -28,5 +28,15 @@ Usage
 load_tweets.py - loads tweets from twitter and insert into the db. run this first.
 
 t.py - twitter client
+  options:
+  -n # -- number of tweets to display (default = 10)
+  -s time|antitime|rel|inf -- sort unread tweets by time (newest first), antitime (oldest first), rel (arbitrary relevance), inf ('influence' - using klout score) (default = time)
+  -m -- don't mark displayed tweets as read (for debugging)
+  -d -- print debug output to STDOUT (for debugging)
+
 
 s.py - search tweets
+  options:
+  args -- search terms
+  -n # - number of results to display (default = 10)
+  -u val -- search username and user's name fields for val, display username and bio

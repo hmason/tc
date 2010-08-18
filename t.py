@@ -176,7 +176,7 @@ if __name__ == "__main__":
     parser.add_option("-m", "--mark_read", dest="mark_read", action="store_false", default=True, help="Don't mark displayed tweets as read")
     parser.add_option("-s", "--sort", dest="sort", action="store", default='time', help="Sort by time, antitime, rel")
     parser.add_option("-n", "--num", dest="num", action="store", default=10, help="number of tweets to retrieve")
-    parser.add_option("-t", "--topic", dest="topic", action="store", default=None, help="show one topic only")
+    # parser.add_option("-t", "--topic", dest="topic", action="store", default=None, help="show one topic only")
     (options, args) = parser.parse_args()
     
     t = Twitter(options)
