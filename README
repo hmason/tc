@@ -2,6 +2,20 @@ tc - Twitter Commander
 (a tribute to http://en.wikipedia.org/wiki/Midnight_Commander)
 ======================
 
+=====
+About
+=====
+
+tc is a command-line twitter client with smart filtering and statistical classification.
+
+Capabilities:
+ * whitelists for users whose content you always want to see and prioritize
+ * blacklist for users you follow whose content you never want to see
+ * blacklist for regular expressions to filter out of your stream entirely
+ * topic classification (simple right now, I'm working on this)
+ * search
+ * the command-line UI rules the skool
+
 Dependencies:
 
 Database:
