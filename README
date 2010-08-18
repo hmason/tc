@@ -1,0 +1,32 @@
+tc - Twitter Commander
+(a tribute to http://en.wikipedia.org/wiki/Midnight_Commander)
+======================
+
+Dependencies:
+
+Database:
+
+mongodb - should be running on localhost (it's easy) - http://www.mongodb.org/downloads
+
+Python packages:
+
+pymongo - the python interface to mongo
+tweepy - twitter API client
+nltk - for simple topic classification and filtering
+
+=======
+Install
+=======
+
+Install dependencies, and configure your user credentials in settings.py
+
+=====
+Usage
+=====
+
+
+load_tweets.py - loads tweets from twitter and insert into the db. run this first.
+
+t.py - twitter client
+
+s.py - search tweets
