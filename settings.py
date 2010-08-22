@@ -1,6 +1,6 @@
 
 # configure me!
-TWITTER_USERNAME = ''
+TWITTER_USERNAME = 'hmason'
 
 # you shouldn't need to touch
 
