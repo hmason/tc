@@ -9,6 +9,8 @@ Copyright (c) 2010 Hilary Mason. All rights reserved.
 
 import sys, os
 import datetime
+import subprocess
+import pickle
 import pymongo
 import tweepy # Twitter API class: http://github.com/joshthecoder/tweepy
 from lib import mongodb
@@ -23,12 +25,21 @@ class loadTweets(object):
     def __init__(self, debug=False):
         self.debug = debug
         self.db = mongodb.connect(self.DB_NAME)
-        self.api = self.init_twitter(settings.TWITTER_USERNAME, settings.TWITTER_PASSWORD)
+        auth = tweepy.OAuthHandler(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
+        auth.set_access_token(settings.ACCESS_KEY, settings.ACCESS_SECRET)
+        self.api = tweepy.API(auth)
 
         last_tweet_id = self.get_last_tweet_id()
-        self.fetchTweets(last_tweet_id)
-        self.classify_tweets()
+        try:
+            self.fetchTweets(last_tweet_id)
+        except tweepy.error.TweepError: # authorization failure
+            print "You need to authorize tc to connect to your twitter account. I'm going to open a browser. Once you authorize, I'll ask for your PIN."
+            auth = self.setup_auth()
+            self.api = tweepy.API(auth)
+            self.fetchTweets(last_tweet_id)
         
+        self.classify_tweets()
+
 
     def get_last_tweet_id(self):
         for r in self.db[self.DB_NAME].find(fields={'id': True}).sort('id',direction=pymongo.DESCENDING).limit(1):
@@ -146,6 +157,19 @@ class loadTweets(object):
 
     
     # util classes    
+    def setup_auth(self):
+        """
+        setup_auth: authorize tc with oath
+        """
+        auth = tweepy.OAuthHandler(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
+        auth_url = auth.get_authorization_url()
+        p = subprocess.Popen("open %s" % auth_url, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        print "( if the browser fails to open, please go to: %s )" % auth_url
+        verifier = raw_input("What's your PIN: ").strip()
+        auth.get_access_token(verifier)
+        pickle.dump((auth.access_token.key, auth.access_token.secret), open('settings_twitter_creds','w'))        
+        return auth
+    
     def init_twitter(self, username, password):
         auth = tweepy.BasicAuthHandler(username, password)
         api = tweepy.API(auth)
