@@ -32,7 +32,8 @@ nltk - for simple topic classification and filtering
 Install
 =======
 
-Install dependencies, and configure your user credentials in settings.py
+Install dependencies, and configure your username in settings.py. Then, run load_tweets.py. If it's your first time, you'll
+have to go through the oath authorization process.
 
 =====
 Usage
