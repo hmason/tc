@@ -3,3 +3,4 @@ settings_twitter_creds
 blacklist_users
 whitelist_users
 blacklist
+settings.py
