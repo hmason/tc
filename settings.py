@@ -1,4 +1,9 @@
 
+# configure me!
+TWITTER_USERNAME = ''
+
+# you shouldn't need to touch
+
 import pickle
 
 CONSUMER_KEY = 'KYQAsPtHu09IzYpoQesZvA'
