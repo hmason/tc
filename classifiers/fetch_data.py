@@ -2,9 +2,9 @@ import sys, os
 import tweepy
 from optparse import OptionParser
 
+sys.path.append('..')
+import settings
 
-username = 'hmason'
-password = 'twitter7com!'
 
 if __name__ == '__main__':
     parser = OptionParser("usage: %prog [options]") # no args this time
@@ -12,7 +12,8 @@ if __name__ == '__main__':
     parser.add_option("-q", "--query", dest="query", action="store", help="query")
     (options, args) = parser.parse_args()
     
-    auth = tweepy.BasicAuthHandler(username, password)
+    auth = tweepy.OAuthHandler(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
+    auth.set_access_token(settings.ACCESS_KEY, settings.ACCESS_SECRET)
     api = tweepy.API(auth)
     
     for t in api.search(options.query, lang='en', rpp=100):
