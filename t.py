@@ -156,17 +156,26 @@ class Twitter(object):
         settings['topic_thresholds'] = {'default': .6, 'betaworks': 1.0, 'narcissism': .25, 'sports': .9999 }
         settings['link_cache_filename'] = 'link_cache'
         
-        f = open('whitelist_users', 'r')
-        settings['whitelist_users'] = [user.strip() for user in f.readlines()]
-        f.close()
+        try:
+            f = open('whitelist_users', 'r')
+            settings['whitelist_users'] = [user.strip() for user in f.readlines()]
+            f.close()
+        except IOError:
+            settings['whitelist_users'] = []
 
-        f = open('blacklist_users', 'r')
-        settings['blacklist_users'] = [user.strip() for user in f.readlines()]
-        f.close()
+        try:
+            f = open('blacklist_users', 'r')
+            settings['blacklist_users'] = [user.strip() for user in f.readlines()]
+            f.close()
+        except IOError:
+            settings['blacklist_users'] = []
         
-        f = open('blacklist', 'r')
-        settings['blacklist'] = [re.compile(b.lower().strip()) for b in f.readlines()]
-        f.close()
+        try:
+            f = open('blacklist', 'r')
+            settings['blacklist'] = [re.compile(b.lower().strip()) for b in f.readlines()]
+            f.close()
+        except IOError:
+            settings['blacklist'] = []
         
         return settings
 
