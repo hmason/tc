@@ -24,7 +24,7 @@ class Display(object):
     def html_decode(self, text):
 	for entity, repl in htmlentitydefs.entitydefs.iteritems():
 		if repl in string.printable:
-			text = re.sub(entity, repl, text)
+			text = re.sub('&%s;' % entity, repl, text)
 	return text
 
     def display_tweets(self, tweets):
