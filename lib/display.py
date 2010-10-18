@@ -3,6 +3,10 @@ import sys, os
 sys.path.append('..')
 import settings
 
+import htmlentitydefs
+import re
+import string
+
 class Display(object):
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -17,14 +21,21 @@ class Display(object):
     
     MAX_TWITTER_USERNAME_LENGTH = 15
     
+    def html_decode(self, text):
+	for entity, repl in htmlentitydefs.entitydefs.iteritems():
+		if repl in string.printable:
+			text = re.sub(entity, repl, text)
+	return text
+
     def display_tweets(self, tweets):
 
         for t in tweets:
             if t['_display']:
+		text = self.html_decode(t['text'])
                 spacer = ' '.join(['' for i in range((self.MAX_TWITTER_USERNAME_LENGTH + 2) - len(t['user']))])
-                if settings.TWITTER_USERNAME in t['text']: # highlight replies   
-                    t['text'] = self.BOLD_ON + t['text'] + self.BOLD_OFF
-                tweet_text = self.OKGREEN + t['user'] + self.ENDC + spacer + t['text']
+                if settings.TWITTER_USERNAME in text: # highlight replies   
+                    text = self.BOLD_ON + text + self.BOLD_OFF
+                tweet_text = self.OKGREEN + t['user'] + self.ENDC + spacer + text
                 if t.get('_display_topics', None): # print with topics
                     print tweet_text + '  ' + self.OKBLUE + ' '.join(t['_display_topics']) + self.ENDC
                 elif t.get('_datetime', None): # print with date/time
